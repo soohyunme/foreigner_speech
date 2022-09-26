@@ -62,3 +62,4 @@ with open(os.path.join(SAVE_PATH, 'foreigner_train.json'), 'w', encoding='utf-8'
 
 with open(os.path.join(SAVE_PATH, 'foreigner_valid.json'), 'w', encoding='utf-8') as f:
     json.dump(val_list, f, ensure_ascii=False, indent=2)
+print('Done !')
