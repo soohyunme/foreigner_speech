@@ -200,7 +200,7 @@ class BucketingSampler(torch.utils.data.sampler.Sampler):
 ## Train an epoch on GPU
 ## ===================================================================
 
-def process_epoch(model,loader,criterion,optimizer,trainmode=True):
+def process_epoch(model,loader,criterion,optimizer,scheduler,trainmode=True):
 
     # Set the model to training or eval mode
     if trainmode:
@@ -241,7 +241,8 @@ def process_epoch(model,loader,criterion,optimizer,trainmode=True):
 
             # print value to TQDM
             tepoch.set_postfix(loss=ep_loss.item()/ep_cnt)
-
+    if trainmode:
+        scheduler.step()
     return ep_loss.item()/ep_cnt
 
 ## ===================================================================
@@ -446,6 +447,12 @@ def main():
     ## define the optimizer with args.lr learning rate and appropriate weight decay
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay) 
 
+    ## define the scheduler
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer,
+                                         lr_lambda=lambda epoch: 0.95 ** epoch,
+                                        last_epoch=-1,
+                                        verbose=False)
+    
     ## set loss function with blank index
     criterion = nn.CTCLoss(blank=len(index2char)).cuda()
 
@@ -457,8 +464,8 @@ def main():
     ## Train for args.max_epoch epochs
     for epoch in range(0, args.max_epoch):
 
-        tloss = process_epoch(model, trainloader, criterion, optimizer, trainmode=True)
-        vloss = process_epoch(model, valloader, criterion, optimizer, trainmode=False)
+        tloss = process_epoch(model, trainloader, criterion, optimizer, scheduler, trainmode=True)
+        vloss = process_epoch(model, valloader, criterion, optimizer, scheduler, trainmode=False)
 
         if (epoch + 1) % 5 == 0:
             # save checkpoint to file
