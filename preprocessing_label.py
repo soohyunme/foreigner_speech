@@ -19,7 +19,7 @@ for file in tqdm(json_files):
 ## Remove special text and create character labels
 label_dict = {}
 
-print('Start mapping special text')
+print('Start remove special text')
 for x in tqdm(info_list):
     x['transcription']['ReadingLabelText'] = x['transcription']['ReadingLabelText'].replace("\n", "").replace("un/","").replace("sn/","").replace("+","").replace("/","").replace("  "," ").replace(",","").replace(".","")
     for ch in x['transcription']['ReadingLabelText']:
@@ -29,6 +29,7 @@ for x in tqdm(info_list):
             label_dict[ch] += 1
 
 ## Save label
+os.makedirs(SAVE_PATH,exist_ok=True)
 with open(os.path.join(SAVE_PATH, 'label.json'), 'w', encoding='utf-8') as f:
     json.dump(sorted(label_dict), f, ensure_ascii=False, indent=2)
 
