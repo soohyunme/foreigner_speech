@@ -200,7 +200,7 @@ class BucketingSampler(torch.utils.data.sampler.Sampler):
 ## Train an epoch on GPU
 ## ===================================================================
 
-def process_epoch(model,loader,criterion,optimizer,trainmode=True):
+def process_epoch(model,loader,criterion,optimizer,scheduler,trainmode=True):
 
     # Set the model to training or eval mode
     if trainmode:
@@ -241,7 +241,8 @@ def process_epoch(model,loader,criterion,optimizer,trainmode=True):
 
             # print value to TQDM
             tepoch.set_postfix(loss=ep_loss.item()/ep_cnt)
-
+    if trainmode:
+        scheduler.step()
     return ep_loss.item()/ep_cnt
 
 ## ===================================================================
@@ -343,33 +344,34 @@ def main():
 
     parser = argparse.ArgumentParser(description='Korean Speech Recognition Project')
 
-    parser.add_argument('--config',         type=str,   default=None,   help='Config YAML file');
+    parser.add_argument('--config',      type=str,   default=None,   help='Config YAML file');
 
     ## related to data loading
-    parser.add_argument('--max_length', type=int, default=10,   help='maximum length of audio file in seconds')
-    parser.add_argument('--train_list', type=str, default='')
-    parser.add_argument('--val_list',   type=str, default='')
-    parser.add_argument('--train_path', type=str, default='')
-    parser.add_argument('--val_path',   type=str, default='')
-    parser.add_argument('--labels_path',   type=str, default='')
+    parser.add_argument('--max_length',  type=int, default=10,   help='maximum length of audio file in seconds')
+    parser.add_argument('--train_list',  type=str, default='')
+    parser.add_argument('--val_list',    type=str, default='')
+    parser.add_argument('--train_path',  type=str, default='')
+    parser.add_argument('--val_path',    type=str, default='')
+    parser.add_argument('--labels_path', type=str, default='')
 
 
     ## related to training
-    parser.add_argument('--max_epoch',  type=int, default=10,       help='number of epochs during training')
-    parser.add_argument('--batch_size', type=int, default=128,      help='batch size')
-    parser.add_argument('--weight_decay', type=float, default=0,      help='weight decay')
-    parser.add_argument('--lr',         type=float, default=2e-2,     help='learning rate')
-    parser.add_argument('--seed',       type=int, default=2222,     help='random seed initialisation')
+    parser.add_argument('--max_epoch',    type=int,   default=10,       help='number of epochs during training')
+    parser.add_argument('--batch_size',   type=int,   default=128,      help='batch size')
+    parser.add_argument('--weight_decay', type=float, default=0,        help='weight decay')
+    parser.add_argument('--lr_decay',     type=float, default=0,        help='learning rate decay')
+    parser.add_argument('--lr',           type=float, default=2e-2,     help='learning rate')
+    parser.add_argument('--seed',         type=int,   default=2222,     help='random seed initialisation')
     
     ## relating to loading and saving
     parser.add_argument('--initial_model',  type=str, default='',   help='load initial model, e.g. for finetuning')
     parser.add_argument('--save_path',      type=str, default='./result',   help='location to save checkpoints')
 
     ## related to inference and deploying server
-    parser.add_argument('--eval',   dest='eval',    action='store_true', help='Evaluation mode')
-    parser.add_argument('--parallel',   dest='parallel',    action='store_true', help='Parallel mode')
-    parser.add_argument('--server', dest='server',  action='store_true', help='Server mode')
-    parser.add_argument('--port',   type=int,       default=10000,       help='Port for the server')
+    parser.add_argument('--eval',       dest='eval',     action='store_true', help='Evaluation mode')
+    parser.add_argument('--parallel',   dest='parallel', action='store_true', help='Parallel mode')
+    parser.add_argument('--server',     dest='server',   action='store_true', help='Server mode')
+    parser.add_argument('--port',       type=int,        default=10000,       help='Port for the server')
 
     args = parser.parse_args()
 
@@ -446,6 +448,12 @@ def main():
     ## define the optimizer with args.lr learning rate and appropriate weight decay
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay) 
 
+    ## define the scheduler
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer,
+                                        lr_lambda=lambda epoch: args.lr_decay ** epoch if args.lr_decay else epoch,
+                                        last_epoch=-1,
+                                        verbose=False)
+    
     ## set loss function with blank index
     criterion = nn.CTCLoss(blank=len(index2char)).cuda()
 
@@ -457,8 +465,8 @@ def main():
     ## Train for args.max_epoch epochs
     for epoch in range(0, args.max_epoch):
 
-        tloss = process_epoch(model, trainloader, criterion, optimizer, trainmode=True)
-        vloss = process_epoch(model, valloader, criterion, optimizer, trainmode=False)
+        tloss = process_epoch(model, trainloader, criterion, optimizer, scheduler, trainmode=True)
+        vloss = process_epoch(model, valloader, criterion, optimizer, scheduler, trainmode=False)
 
         if (epoch + 1) % 5 == 0:
             # save checkpoint to file
