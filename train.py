@@ -344,33 +344,34 @@ def main():
 
     parser = argparse.ArgumentParser(description='Korean Speech Recognition Project')
 
-    parser.add_argument('--config',         type=str,   default=None,   help='Config YAML file');
+    parser.add_argument('--config',      type=str,   default=None,   help='Config YAML file');
 
     ## related to data loading
-    parser.add_argument('--max_length', type=int, default=10,   help='maximum length of audio file in seconds')
-    parser.add_argument('--train_list', type=str, default='')
-    parser.add_argument('--val_list',   type=str, default='')
-    parser.add_argument('--train_path', type=str, default='')
-    parser.add_argument('--val_path',   type=str, default='')
-    parser.add_argument('--labels_path',   type=str, default='')
+    parser.add_argument('--max_length',  type=int, default=10,   help='maximum length of audio file in seconds')
+    parser.add_argument('--train_list',  type=str, default='')
+    parser.add_argument('--val_list',    type=str, default='')
+    parser.add_argument('--train_path',  type=str, default='')
+    parser.add_argument('--val_path',    type=str, default='')
+    parser.add_argument('--labels_path', type=str, default='')
 
 
     ## related to training
-    parser.add_argument('--max_epoch',  type=int, default=10,       help='number of epochs during training')
-    parser.add_argument('--batch_size', type=int, default=128,      help='batch size')
-    parser.add_argument('--weight_decay', type=float, default=0,      help='weight decay')
-    parser.add_argument('--lr',         type=float, default=2e-2,     help='learning rate')
-    parser.add_argument('--seed',       type=int, default=2222,     help='random seed initialisation')
+    parser.add_argument('--max_epoch',    type=int,   default=10,       help='number of epochs during training')
+    parser.add_argument('--batch_size',   type=int,   default=128,      help='batch size')
+    parser.add_argument('--weight_decay', type=float, default=0,        help='weight decay')
+    parser.add_argument('--lr_decay',     type=float, default=0,        help='learning rate decay')
+    parser.add_argument('--lr',           type=float, default=2e-2,     help='learning rate')
+    parser.add_argument('--seed',         type=int,   default=2222,     help='random seed initialisation')
     
     ## relating to loading and saving
     parser.add_argument('--initial_model',  type=str, default='',   help='load initial model, e.g. for finetuning')
     parser.add_argument('--save_path',      type=str, default='./result',   help='location to save checkpoints')
 
     ## related to inference and deploying server
-    parser.add_argument('--eval',   dest='eval',    action='store_true', help='Evaluation mode')
-    parser.add_argument('--parallel',   dest='parallel',    action='store_true', help='Parallel mode')
-    parser.add_argument('--server', dest='server',  action='store_true', help='Server mode')
-    parser.add_argument('--port',   type=int,       default=10000,       help='Port for the server')
+    parser.add_argument('--eval',       dest='eval',     action='store_true', help='Evaluation mode')
+    parser.add_argument('--parallel',   dest='parallel', action='store_true', help='Parallel mode')
+    parser.add_argument('--server',     dest='server',   action='store_true', help='Server mode')
+    parser.add_argument('--port',       type=int,        default=10000,       help='Port for the server')
 
     args = parser.parse_args()
 
@@ -449,7 +450,7 @@ def main():
 
     ## define the scheduler
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer=optimizer,
-                                         lr_lambda=lambda epoch: 0.95 ** epoch,
+                                        lr_lambda=lambda epoch: args.lr_decay ** epoch if args.lr_decay else epoch,
                                         last_epoch=-1,
                                         verbose=False)
     
