@@ -14,4 +14,5 @@ pip3 install --editable ./
 python3 setup.py build develop
 ```
 - We only test this implementation in Ubuntu 20.04.
+- DockerFile is also supported in this repo.
 
