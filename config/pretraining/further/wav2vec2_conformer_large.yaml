@@ -9,32 +9,34 @@ checkpoint:
   save_interval_updates: 25000
   keep_interval_updates: 1
   no_epoch_checkpoints: true
+  finetune_from_model: ???
 
 task:
   _name: audio_pretraining
   data: ???
-  max_sample_size: 250000
+  max_sample_size: 320000
   min_sample_size: 32000
-  normalize: false
+  normalize: true
 
 dataset:
   num_workers: 6
-  max_tokens: 1400000
+  max_tokens: 1200000 # length per batch
   skip_invalid_size_inputs_valid_test: true
 
 distributed_training:
-  distributed_world_size: 64
+  distributed_world_size: 4 # Number of GPUs
   ddp_backend: legacy_ddp
 
 criterion:
   _name: wav2vec
   infonce: true
   log_keys: ["prob_perplexity","code_perplexity","temp"]
-  loss_weights: [0.1, 10]
+  loss_weights: [0.1, 0]
 
 optimization:
-  max_update: 400000
-  lr: [0.0005]
+  max_update: 1000000
+  lr: [0.005]
+  update_freq: [32] # 128/4
 
 optimizer:
   _name: adam
@@ -49,9 +51,24 @@ lr_scheduler:
 model:
   _name: wav2vec2
   quantize_targets: true
-  final_dim: 256
-  encoder_layerdrop: 0.05
-  dropout_input: 0.1
-  dropout_features: 0.1
-  feature_grad_mult: 0.1
-  encoder_embed_dim: 768
+  extractor_mode: layer_norm
+  layer_norm_first: true
+  final_dim: 768
+  latent_temp: [2.0,0.1,0.999995]
+  encoder_layerdrop: 0.00
+  dropout_input: 0.0
+  dropout_features: 0.0
+  dropout: 0.0
+  attention_dropout: 0.0
+  conv_bias: true
+
+  encoder_layers: 24
+  encoder_embed_dim: 1024
+  encoder_ffn_embed_dim: 4096
+  encoder_attention_heads: 16
+
+  feature_grad_mult: 1.0
+
+  layer_type: conformer
+  attn_type: espnet
+  pos_enc_type: rel_pos

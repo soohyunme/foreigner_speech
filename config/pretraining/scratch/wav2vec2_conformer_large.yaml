@@ -1,10 +1,9 @@
 # @package _group_
 
 common:
-  tpu: true
-  fp16: false
+  fp16: true
   log_format: json
-  log_interval: 10
+  log_interval: 200
 
 checkpoint:
   save_interval_updates: 25000
@@ -14,25 +13,17 @@ checkpoint:
 task:
   _name: audio_pretraining
   data: ???
-  max_sample_size: 250000
+  max_sample_size: 320000
   min_sample_size: 32000
   normalize: true
-  num_batch_buckets: 3
-  precompute_mask_indices: true
-  enable_padding: true
-  inferred_w2v_config:
-      mask_prob: 0.65
-      mask_selection: 'static'
-      mask_other: 0
-      mask_channel_prob: 0.1
 
 dataset:
   num_workers: 6
-  max_tokens: 1200000
+  max_tokens: 1200000 # length per batch
   skip_invalid_size_inputs_valid_test: true
 
 distributed_training:
-  distributed_world_size: 8
+  distributed_world_size: 4 # Number of GPUs
   ddp_backend: legacy_ddp
 
 criterion:
@@ -44,6 +35,7 @@ criterion:
 optimization:
   max_update: 1000000
   lr: [0.005]
+  update_freq: [32] # 128/4
 
 optimizer:
   _name: adam
@@ -75,3 +67,7 @@ model:
   encoder_attention_heads: 16
 
   feature_grad_mult: 1.0
+
+  layer_type: conformer
+  attn_type: espnet
+  pos_enc_type: rel_pos

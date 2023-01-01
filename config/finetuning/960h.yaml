@@ -6,11 +6,11 @@ common:
   log_interval: 200
 
 checkpoint:
-  save_interval: 1000
-  save_interval_updates: 50
-  keep_interval_updates: 1
   no_epoch_checkpoints: true
   best_checkpoint_metric: wer
+  save_interval_updates: 10000
+  keep_interval_updates: 1
+  save_dir: ???
 
 task:
   _name: audio_finetuning
@@ -22,23 +22,21 @@ dataset:
   num_workers: 6
   max_tokens: 3200000
   skip_invalid_size_inputs_valid_test: true
-  validate_after_updates: 10000
-  validate_interval: 1000
-  valid_subset: dev_other
+  valid_subset: dev
 
 distributed_training:
   ddp_backend: legacy_ddp
-  distributed_world_size: 2
+  distributed_world_size: 4 # Number of GPUs
 
 criterion:
   _name: ctc
   zero_infinity: true
 
 optimization:
-  max_update: 13000
-  lr: [0.00005]
+  max_update: 320000
+  lr: [0.0001]
   sentence_avg: true
-  update_freq: [4]
+  update_freq: [2] # 8/4
 
 optimizer:
   _name: adam
@@ -54,10 +52,10 @@ model:
   _name: wav2vec_ctc
   w2v_path: ???
   apply_mask: true
-  mask_prob: 0.65
-  mask_channel_prob: 0.25
+  mask_prob: 0.5
+  mask_channel_prob: 0.1
   mask_channel_length: 64
   layerdrop: 0.1
   activation_dropout: 0.1
   feature_grad_mult: 0.0
-  freeze_finetune_updates: 10000
+  freeze_finetune_updates: 0
