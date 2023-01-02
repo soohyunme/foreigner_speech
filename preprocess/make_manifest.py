@@ -21,13 +21,6 @@ def get_parser():
         "root", metavar="DIR", help="root directory containing flac files to index"
     )
     parser.add_argument(
-        "--valid-percent",
-        default=0.01,
-        type=float,
-        metavar="D",
-        help="percentage of data to use as validation set (between 0 and 1)",
-    )
-    parser.add_argument(
         "--dest", default=".", type=str, metavar="DIR", help="output directory"
     )
     parser.add_argument(
@@ -45,7 +38,6 @@ def get_parser():
 
 
 def main(args):
-    assert args.valid_percent >= 0 and args.valid_percent <= 1.0
 
     if not os.path.exists(args.dest):
         os.makedirs(args.dest)
@@ -60,7 +52,9 @@ def main(args):
         else None
     )
 
-    with open(os.path.join(args.dest, "train.tsv"), "w") as train_f:
+    with open(os.path.join(args.dest, "train.tsv"), "w") as train_f, open(
+            os.path.join(args.dest, "error.txt"), "w"
+    ) as error_f:
         print(dir_path, file=train_f)
 
         if valid_f is not None:
@@ -72,11 +66,10 @@ def main(args):
             if args.path_must_contain and args.path_must_contain not in file_path:
                 continue
 
-            frames = soundfile.info(fname).frames
-            
-            if frames == 0:
-                with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
-                    print(fname, file=error_f)
+            try:
+                frames = soundfile.info(fname).frames
+            except:
+                print(fname, file=error_f)
                 continue
 
             dest = train_f if rand.random() > args.valid_percent else valid_f
