@@ -8,8 +8,8 @@ Foreigner Korean speech voice recognition hackathon - CSLEE
 * For training new models, you'll also need an NVIDIA GPU and [NCCL](https://github.com/NVIDIA/nccl)
 * **To install fairseq** and develop locally:
 ``` bash
-git clone https://github.com/pytorch/fairseq
-cd fairseq
+https://github.com/soohyunme/foreigner_speech
+cd foreigner_speech
 pip3 install --editable ./
 python3 setup.py build develop
 ```
