@@ -19,11 +19,11 @@ task:
 
 dataset:
   num_workers: 6
-  max_tokens: 1400000
+  max_tokens: 1400000 # length per batch
   skip_invalid_size_inputs_valid_test: true
 
 distributed_training:
-  distributed_world_size: 64
+  distributed_world_size: 4 # Number of GPUs
   ddp_backend: legacy_ddp
 
 criterion:
@@ -35,6 +35,7 @@ criterion:
 optimization:
   max_update: 400000
   lr: [0.0005]
+  update_freq: [16] # 64/4
 
 optimizer:
   _name: adam
@@ -55,6 +56,3 @@ model:
   dropout_features: 0.1
   feature_grad_mult: 0.1
   encoder_embed_dim: 768
-  layer_type: conformer
-  attn_type: espnet
-  pos_enc_type: rel_pos
