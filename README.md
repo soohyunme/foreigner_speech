@@ -16,3 +16,24 @@ python3 setup.py build develop
 - We only test this implementation in Ubuntu 20.04.
 - DockerFile is also supported in this repo.
 
+## Instructions
+ - We support script examples to execute code easily(check `script` folder)
+ - Following this instruction give you exact matched results.
+```bash
+# Guilde to make model with Foreignerspeech(orthographic transcription) 
+
+# [1] unzip dataset
+bash script/preprocess/unzip_foreigner_speech.sh
+
+# [2] preprocess dataset & make manifest
+bash script/preprocess/make_ksponspeech_script_for_mulitmodel.sh
+
+# [3] further pre-train the model
+bash script/pretrain/run_further_pretrain.sh
+ 
+# [4] fine-tune the model
+bash script/finetune/run_ksponspeech_multimodel.sh
+
+# [5] inference the model
+bash script/inference/evaluate_multimodel.sh
+```
