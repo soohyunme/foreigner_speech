@@ -5,8 +5,7 @@ Foreigner Korean speech voice recognition hackathon - CSLEE
 
 * [PyTorch](http://pytorch.org/) version >= 1.10.0
 * Python version >= 3.8
-* For training new models, you'll also need an NVIDIA GPU and [NCCL](https://github.com/NVIDIA/nccl)
-* **To install fairseq** and develop locally:
+* To install foreignerspeech and develop locally:
 ``` bash
 https://github.com/soohyunme/foreigner_speech
 cd foreigner_speech
