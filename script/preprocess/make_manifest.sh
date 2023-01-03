@@ -24,7 +24,15 @@ ROOT_DIR='/code/gitRepo/data/aihub/Foreigner_speech' ## it is dummy, please modi
 # Put your absolute destination path
 DESTINATION='/manifest/path' ## it is dummy, please modify it
 
+# Select transcription type
+# Ex) (70%)/(칠 십 퍼센트) 확률이라니 (뭐 뭔)/(모 몬) 소리야 진짜 (100%)/(백 프로)가 왜 안돼?
+# phonetic: 칠 십 퍼센트 확률이라니 모 몬 소리야 진짜 백 프로가 왜 안돼
+# spelling: 70% 확률이라니 뭐 뭔 소리야 진짜 100%가 왜 안돼
+PROCESS_MODE=phonetic
+# PROCESS_MODE=spelling
+
 ## Run unzip code
 python preprocess/make_manifest.py \
     "$ROOT_DIR" \
-    --dest "$DESTINATION"
+    --dest "$DESTINATION" \
+    --preprocess-mode $PROCESS_MODE

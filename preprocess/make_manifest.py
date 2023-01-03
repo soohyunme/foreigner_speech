@@ -4,6 +4,7 @@ import os
 import random
 import json
 import soundfile
+from preprocess import preprocess, sentence_filter
 
 
 def get_parser():
@@ -17,6 +18,10 @@ def get_parser():
     parser.add_argument(
         "--ext", default="wav", type=str, metavar="EXT", help="extension to look for"
     )
+    parser.add_argument('--preprocess-mode', type=str, default='phonetic',
+        help='Ex) (70%)/(칠 십 퍼센트) 확률이라니 (뭐 뭔)/(모 몬) 소리야 진짜 (100%)/(백 프로)가 왜 안돼?'
+                'phonetic: 칠 십 퍼센트 확률이라니 모 몬 소리야 진짜 백 프로가 왜 안돼?'
+                'spelling: 70% 확률이라니 뭐 뭔 소리야 진짜 100%가 왜 안돼?')
     return parser
 
 
@@ -59,6 +64,7 @@ def main(args):
                 file_path = os.path.join(wav_dir, info_data['fileName'])
                 transcription = info_data['transcription']['ReadingLabelText'] if \
                     info_data['transcription']['ReadingLabelText'] != '' else info_data['transcription']['AnswerLabelText']
+                new_sentence = sentence_filter(raw_sentence=transcription, mode=args.preprocess_mode)
 
                 try:
                     frames = soundfile.info(file_path).frames
@@ -70,12 +76,12 @@ def main(args):
                 print(
                 "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=tsv_out
                 )
-                print(transcription, file=wrd_out)
+                print(new_sentence, file=wrd_out)
                 print(
-                    " ".join(list(transcription.replace(" ", "|"))) + " |", file=ltr_out
+                    " ".join(list(new_sentence.replace(" ", "|"))) + " |", file=ltr_out
                 )
 
-                for grapheme in transcription:
+                for grapheme in new_sentence:
                     grapheme = " ".join(list(grapheme.replace(' ', '|').upper()))
                     if grapheme not in vocab_list:
                         vocab_list.append(grapheme)
@@ -109,6 +115,7 @@ def main(args):
                 file_path = os.path.join(wav_dir, info_data['fileName'])
                 transcription = info_data['transcription']['ReadingLabelText'] if \
                     info_data['transcription']['ReadingLabelText'] != '' else info_data['transcription']['AnswerLabelText']
+                new_sentence = sentence_filter(raw_sentence=transcription, mode=args.preprocess_mode)
 
                 try:
                     frames = soundfile.info(file_path).frames
@@ -120,9 +127,9 @@ def main(args):
                 print(
                 "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=tsv_out
                 )
-                print(transcription, file=wrd_out)
+                print(new_sentence, file=wrd_out)
                 print(
-                    " ".join(list(transcription.replace(" ", "|"))) + " |", file=ltr_out
+                    " ".join(list(new_sentence.replace(" ", "|"))) + " |", file=ltr_out
                 )
 
 
