@@ -1,17 +1,8 @@
-#!/usr/bin/env python3
-# Copyright (c) Facebook, Inc. and its affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-"""
-Data pre-processing: build vocabularies and binarize training data.
-"""
-
 import argparse
 import glob
 import os
 import random
-
+import json
 import soundfile
 
 
@@ -38,46 +29,69 @@ def get_parser():
 
 
 def main(args):
-
     if not os.path.exists(args.dest):
         os.makedirs(args.dest)
 
+    for folder in ['1.Training','2.Validation']:
+        assert os.path.isdir(os.path.join(args.root, folder)), "root 경로를 확인해주세요. [{}]".format(args.root)
+        for dir in ['라벨링데이터', '원천데이터']:
+            if dir not in os.listdir(os.path.join(args.root, folder)):
+                assert os.path.isdir(folder), "'{}' 폴더를 찾을 수 없습니다. [{}]".format(dir, os.path.join(args.root, folder, dir))
+
+    if os.path.exists(os.path.join(args.dest, "error.txt")):
+        os.remove(os.path.join(args.dest, "error.txt"))
+
     dir_path = os.path.realpath(args.root)
-    search_path = os.path.join(dir_path, "**/*." + args.ext)
-    rand = random.Random(args.seed)
 
-    valid_f = (
-        open(os.path.join(args.dest, "valid.tsv"), "w")
-        if args.valid_percent > 0
-        else None
-    )
-
-    with open(os.path.join(args.dest, "train.tsv"), "w") as train_f, open(
-            os.path.join(args.dest, "error.txt"), "w"
-    ) as error_f:
+    with open(os.path.join(args.dest, "train.tsv"), "w") as train_f:
         print(dir_path, file=train_f)
 
-        if valid_f is not None:
-            print(dir_path, file=valid_f)
+        dir_name=os.path.join('1.Training', '라벨링데이터')
+        search_path=os.path.join(args.root, dir_name, "**/*.json")
 
         for fname in glob.iglob(search_path, recursive=True):
-            file_path = os.path.realpath(fname)
+            parts = os.path.dirname(fname).split(os.sep)
+            wav_dir = os.sep.join(dir if i !=len(parts) - 2 else 'TS_'+dir for i, dir in enumerate(parts)).replace('라벨링데이터', '원천데이터')
 
-            if args.path_must_contain and args.path_must_contain not in file_path:
-                continue
+            with open(fname, 'r') as f:
+                info_data = json.load(f)
+                file_path = os.path.join(wav_dir, info_data['fileName'])
+                
+                try:
+                    frames = soundfile.info(file_path).frames
+                except:
+                    with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
+                        print(file_path, file=error_f)
+                    continue
+                
+                print(
+                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=train_f
+                )
+    
+    with open(os.path.join(args.dest, "valid.tsv"), "w") as valid_f:
+        print(dir_path, file=valid_f)
 
-            try:
-                frames = soundfile.info(fname).frames
-            except:
-                print(fname, file=error_f)
-                continue
+        dir_name=os.path.join('2.Validation', '라벨링데이터')
+        search_path=os.path.join(args.root, dir_name, "**/*.json")
 
-            dest = train_f if rand.random() > args.valid_percent else valid_f
-            print(
-                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=dest
-            )
-    if valid_f is not None:
-        valid_f.close()
+        for fname in glob.iglob(search_path, recursive=True):
+            parts = os.path.dirname(fname).split(os.sep)
+            wav_dir = os.sep.join(dir if i !=len(parts) - 2 else 'VS_'+dir for i, dir in enumerate(parts)).replace('라벨링데이터', '원천데이터')
+
+            with open(fname, 'r') as f:
+                info_data = json.load(f)
+                file_path = os.path.join(wav_dir, info_data['fileName'])
+                
+                try:
+                    frames = soundfile.info(file_path).frames
+                except:
+                    with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
+                        print(file_path, file=error_f)
+                    continue
+                
+                print(
+                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=valid_f
+                )
 
 
 if __name__ == "__main__":
