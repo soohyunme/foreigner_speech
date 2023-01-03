@@ -17,14 +17,6 @@ def get_parser():
     parser.add_argument(
         "--ext", default="wav", type=str, metavar="EXT", help="extension to look for"
     )
-    parser.add_argument("--seed", default=42, type=int, metavar="N", help="random seed")
-    parser.add_argument(
-        "--path-must-contain",
-        default=None,
-        type=str,
-        metavar="WAV",
-        help="if set, path must contain this substring for a file to be included in the manifest",
-    )
     return parser
 
 
@@ -43,11 +35,20 @@ def main(args):
 
     dir_path = os.path.realpath(args.root)
 
-    with open(os.path.join(args.dest, "train.tsv"), "w") as train_f:
-        print(dir_path, file=train_f)
+    dataset = 'train'
+    with open(os.path.join(args.dest, dataset + ".tsv"), "w") as tsv_out, open(
+        os.path.join(args.dest, dataset + ".ltr"), "w"
+    ) as ltr_out, open(
+        os.path.join(args.dest, dataset + ".wrd"), "w"
+    ) as wrd_out:
+
+        print(dir_path, file=tsv_out)
 
         dir_name=os.path.join('1.Training', '라벨링데이터')
         search_path=os.path.join(args.root, dir_name, "**/*.json")
+
+        vocab_list = list()
+        vocab_freq = list()
 
         for fname in glob.iglob(search_path, recursive=True):
             parts = os.path.dirname(fname).split(os.sep)
@@ -56,20 +57,45 @@ def main(args):
             with open(fname, 'r') as f:
                 info_data = json.load(f)
                 file_path = os.path.join(wav_dir, info_data['fileName'])
-                
+                transcription = info_data['transcription']['ReadingLabelText'] if \
+                    info_data['transcription']['ReadingLabelText'] != '' else info_data['transcription']['AnswerLabelText']
+
                 try:
                     frames = soundfile.info(file_path).frames
                 except:
                     with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
                         print(file_path, file=error_f)
                     continue
-                
+
                 print(
-                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=train_f
+                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=tsv_out
                 )
-    
-    with open(os.path.join(args.dest, "valid.tsv"), "w") as valid_f:
-        print(dir_path, file=valid_f)
+                print(transcription, file=wrd_out)
+                print(
+                    " ".join(list(transcription.replace(" ", "|"))) + " |", file=ltr_out
+                )
+
+                for grapheme in transcription:
+                    grapheme = " ".join(list(grapheme.replace(' ', '|').upper()))
+                    if grapheme not in vocab_list:
+                        vocab_list.append(grapheme)
+                        vocab_freq.append(1)
+                    else:
+                        vocab_freq[vocab_list.index(grapheme)] += 1
+
+        vocab_freq, vocab_list = zip(*sorted(zip(vocab_freq, vocab_list), reverse=True))
+        with open(os.path.join(args.dest, 'dict.ltr.txt'), 'w') as write_f:
+            for idx, (grpm, freq) in enumerate(zip(vocab_list, vocab_freq)):
+                print("{} {}".format(grpm, freq), file=write_f)
+
+    dataset = 'valid'
+    with open(os.path.join(args.dest, dataset + ".tsv"), "w") as tsv_out, open(
+        os.path.join(args.dest, dataset + ".ltr"), "w"
+    ) as ltr_out, open(
+        os.path.join(args.dest, dataset + ".wrd"), "w"
+    ) as wrd_out:
+
+        print(dir_path, file=tsv_out)
 
         dir_name=os.path.join('2.Validation', '라벨링데이터')
         search_path=os.path.join(args.root, dir_name, "**/*.json")
@@ -81,16 +107,22 @@ def main(args):
             with open(fname, 'r') as f:
                 info_data = json.load(f)
                 file_path = os.path.join(wav_dir, info_data['fileName'])
-                
+                transcription = info_data['transcription']['ReadingLabelText'] if \
+                    info_data['transcription']['ReadingLabelText'] != '' else info_data['transcription']['AnswerLabelText']
+
                 try:
                     frames = soundfile.info(file_path).frames
                 except:
                     with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
                         print(file_path, file=error_f)
                     continue
-                
+
                 print(
-                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=valid_f
+                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=tsv_out
+                )
+                print(transcription, file=wrd_out)
+                print(
+                    " ".join(list(transcription.replace(" ", "|"))) + " |", file=ltr_out
                 )
 
 
