@@ -28,7 +28,7 @@ bash script/preprocess/unzip_foreigner_speech.sh
 bash script/preprocess/make_manifest.sh
 
 # # [3] further pre-train the model
-# bash script/pretrain/run_further_pretrain.sh
+bash script/pretrain/run_further_pretrain.sh
  
 # # [4] fine-tune the model
 # bash script/finetune/run_ksponspeech_multimodel.sh
@@ -36,3 +36,9 @@ bash script/preprocess/make_manifest.sh
 # # [5] inference the model
 # bash script/inference/evaluate_multimodel.sh
 ```
+
+## Pretrained model
+ - E-Wav2vec 2.0 : Wav2vec 2.0 pretrained on Englsih dataset released by Fairseq(-py)
+
+## Dataset
+ - [Foreignerspeech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
