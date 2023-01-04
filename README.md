@@ -7,7 +7,7 @@ Foreigner Korean speech voice recognition hackathon - CSLEE
 * Python version >= 3.8
 * To install foreignerspeech and develop locally:
 ``` bash
-https://github.com/soohyunme/foreigner_speech
+git clone https://github.com/soohyunme/foreigner_speech
 cd foreigner_speech
 pip3 install --editable ./
 python3 setup.py build develop
@@ -31,10 +31,10 @@ bash script/preprocess/make_manifest.sh
 bash script/pretrain/run_further_pretrain.sh
  
 # # [4] fine-tune the model
-# bash script/finetune/run_ksponspeech_multimodel.sh
+bash script/finetune/run_foreignerspeech.sh
 
 # # [5] inference the model
-# bash script/inference/evaluate_multimodel.sh
+# bash script/inference/evaluate_multimodel.sh  
 ```
 
 ## Pretrained model
@@ -43,6 +43,11 @@ bash script/pretrain/run_further_pretrain.sh
 ## Dataset
 - [Foreignerspeech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
 
+## Acknowledgments
+ - Our code was modified from [fairseq](https://github.com/pytorch/fairseq) codebase. We use the same license as fairseq.
+ - [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec)
+ - The preprocessing code was developed with reference to [Kospeech](https://github.com/sooftware/KoSpeech).
+
 ## Relevant Materials
 - [fairseq](https://github.com/facebookresearch/fairseq)
-- [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec)
+- 
