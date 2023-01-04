@@ -15,5 +15,5 @@ python fairseq_cli/hydra_train.py \
   task.data=$MANIFEST_DIR \
   checkpoint.save_dir=$(realpath .)/checkpoints/finetune/foreigner/further \
   model.w2v_path=$MODEL_PATH \
-  --config-dir configs/finetuning  \
+  --config-dir config/finetuning  \
   --config-name $CONFIG_NAME
