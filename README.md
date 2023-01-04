@@ -41,7 +41,7 @@ bash script/finetune/run_foreigner_speech.sh
 - E-Wav2vec 2.0 : Wav2vec 2.0 pretrained on Englsih dataset released by Fairseq(-py)
 
 ## Dataset
-- [Foreigner-speech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
+- [Foreigner-speech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505) : Korean speech data of foreigner speakers
 
 ## Acknowledgments
  - Our code was modified from [fairseq](https://github.com/pytorch/fairseq) and [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec) codebase. We use the same license as fairseq.
