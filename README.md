@@ -31,7 +31,7 @@ bash script/preprocess/make_manifest.sh
 bash script/pretrain/run_further_pretrain.sh
  
 # # [4] fine-tune the model
-bash script/finetune/run_foreignerspeech.sh
+bash script/finetune/run_foreigner_speech.sh
 
 # # [5] inference the model
 # bash script/inference/evaluate_multimodel.sh  
