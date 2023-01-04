@@ -44,10 +44,5 @@ bash script/finetune/run_foreignerspeech.sh
 - [Foreignerspeech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
 
 ## Acknowledgments
- - Our code was modified from [fairseq](https://github.com/pytorch/fairseq) codebase. We use the same license as fairseq.
- - [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec)
+ - Our code was modified from [fairseq](https://github.com/pytorch/fairseq) and [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec) codebase. We use the same license as fairseq.
  - The preprocessing code was developed with reference to [Kospeech](https://github.com/sooftware/KoSpeech).
-
-## Relevant Materials
-- [fairseq](https://github.com/facebookresearch/fairseq)
-- 
