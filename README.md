@@ -46,3 +46,6 @@ bash script/finetune/run_foreigner_speech.sh
 ## Acknowledgments
  - Our code was modified from [fairseq](https://github.com/pytorch/fairseq) and [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec) codebase. We use the same license as fairseq.
  - The preprocessing code was developed with reference to [Kospeech](https://github.com/sooftware/KoSpeech).
+
+## License
+Our implementation code(-py) is MIT-licensed.
