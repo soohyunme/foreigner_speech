@@ -38,7 +38,11 @@ bash script/pretrain/run_further_pretrain.sh
 ```
 
 ## Pretrained model
- - E-Wav2vec 2.0 : Wav2vec 2.0 pretrained on Englsih dataset released by Fairseq(-py)
+- E-Wav2vec 2.0 : Wav2vec 2.0 pretrained on Englsih dataset released by Fairseq(-py)
 
 ## Dataset
- - [Foreignerspeech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
+- [Foreignerspeech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
+
+## Relevant Materials
+- [fairseq](https://github.com/facebookresearch/fairseq)
+- [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec)
