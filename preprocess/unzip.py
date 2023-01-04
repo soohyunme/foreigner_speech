@@ -34,7 +34,9 @@ def main(args):
     root = os.path.dirname(args.src) if args.dest is None else args.dest
 
     search_path = os.path.join(args.src, "**/*." + args.ext)
-    for src_path in glob.glob(search_path, recursive=True):
+    assert len(list(glob.iglob(search_path, recursive=True))) != 0, "root 경로에서 압축파일을 찾을 수 없습니다. root_path : [{}]".format(args.src)
+
+    for src_path in glob.iglob(search_path, recursive=True):
         parts = src_path.split(os.sep)
         dir = os.sep.join(parts[len(args.src.split(os.sep))-1:]).split('.'+args.ext)[0]
         dest_dir = os.path.join(root, dir)
