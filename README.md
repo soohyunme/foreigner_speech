@@ -19,7 +19,7 @@ python3 setup.py build develop
  - We support script examples to execute code easily(check `script` folder)
 
 ```bash
-# Guilde to make model with Foreignerspeech(orthographic transcription) 
+# Guilde to make model with Foreigner-speech(orthographic transcription) 
 
 # [1] unzip dataset
 bash script/preprocess/unzip_foreigner_speech.sh
@@ -41,7 +41,7 @@ bash script/finetune/run_foreignerspeech.sh
 - E-Wav2vec 2.0 : Wav2vec 2.0 pretrained on Englsih dataset released by Fairseq(-py)
 
 ## Dataset
-- [Foreignerspeech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
+- [Foreigner-speech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505)
 
 ## Acknowledgments
  - Our code was modified from [fairseq](https://github.com/pytorch/fairseq) and [K-wav2vec](https://github.com/JoungheeKim/K-wav2vec) codebase. We use the same license as fairseq.
