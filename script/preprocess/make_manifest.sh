@@ -34,7 +34,7 @@ LIMIT=200
 PROCESS_MODE=phonetic
 # PROCESS_MODE=spelling
 
-## Run unzip code
+# Run unzip code
 python preprocess/make_manifest.py \
     "$ROOT_DIR" \
     --dest "$DESTINATION" \
