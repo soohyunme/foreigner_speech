@@ -27,14 +27,14 @@ bash script/preprocess/unzip_foreigner_speech.sh
 # [2] preprocess dataset & make manifest
 bash script/preprocess/make_manifest.sh
 
-# # [3] further pre-train the model
+# [3] further pre-train the model
 bash script/pretrain/run_further_pretrain.sh
  
-# # [4] fine-tune the model
+# [4] fine-tune the model
 bash script/finetune/run_foreigner_speech.sh
 
-# # [5] inference the model
-# bash script/inference/evaluate_multimodel.sh  
+# [5] inference the model
+bash script/inference/evaluate_foreigner_speech.sh
 ```
 
 ## Pretrained model
