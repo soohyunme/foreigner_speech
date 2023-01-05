@@ -64,6 +64,7 @@ def make_manifest(args, dataset, dir_dict):
                 new_sentence = sentence_filter(raw_sentence=transcription, mode=args.preprocess_mode)
 
                 if len(new_sentence) > args.token_limit:
+                    limit_count+=1
                     continue
 
                 try:
@@ -81,7 +82,6 @@ def make_manifest(args, dataset, dir_dict):
                     " ".join(list(new_sentence.replace(" ", "|"))) + " |", file=ltr_out
                 )
                 if dataset != 'train':
-                    limit_count+=1
                     continue
 
                 for grapheme in new_sentence:	
@@ -93,7 +93,7 @@ def make_manifest(args, dataset, dir_dict):
                         vocab_freq[vocab_list.index(grapheme)] += 1
         
         print("Ignore numbers : ", limit_count)
-        
+
         if dataset == 'train':
             save_dict(args, vocab_freq, vocab_list)
 
