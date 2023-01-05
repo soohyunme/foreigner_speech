@@ -50,6 +50,7 @@ def make_manifest(args, dataset, dir_dict):
 
         vocab_list = list()
         vocab_freq = list()
+        limit_count = 0
 
         for fname in glob.iglob(search_path, recursive=True):
             parts = os.path.dirname(fname).split(os.sep)
@@ -61,6 +62,9 @@ def make_manifest(args, dataset, dir_dict):
                 transcription = info_data['transcription']['ReadingLabelText'] if \
                     info_data['transcription']['ReadingLabelText'] != '' else info_data['transcription']['AnswerLabelText']
                 new_sentence = sentence_filter(raw_sentence=transcription, mode=args.preprocess_mode)
+
+                if len(new_sentence) > args.token_limit:
+                    continue
 
                 try:
                     frames = soundfile.info(file_path).frames
@@ -77,6 +81,7 @@ def make_manifest(args, dataset, dir_dict):
                     " ".join(list(new_sentence.replace(" ", "|"))) + " |", file=ltr_out
                 )
                 if dataset != 'train':
+                    limit_count+=1
                     continue
 
                 for grapheme in new_sentence:	
@@ -86,6 +91,8 @@ def make_manifest(args, dataset, dir_dict):
                         vocab_freq.append(1)	
                     else:	
                         vocab_freq[vocab_list.index(grapheme)] += 1
+        
+        print("Ignore numbers : ", limit_count)
         
         if dataset == 'train':
             save_dict(args, vocab_freq, vocab_list)
