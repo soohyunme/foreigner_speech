@@ -31,7 +31,8 @@ RUN pip install soundfile \
     packaging \
     torch \
     editdistance \
-    tensorboardX
+    tensorboardX \
+    Levenshtein
 
 # Install kenlm 
 WORKDIR /opt
