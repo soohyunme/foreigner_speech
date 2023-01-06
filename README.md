@@ -19,7 +19,7 @@ python3 setup.py build develop
  - We support script examples to execute code easily(check `script` folder)
 
 ```bash
-# Guilde to make model with Foreigner-speech(orthographic transcription) 
+# Guide to make model with Foreigner-speech(orthographic transcription) 
 
 # [1] unzip dataset
 bash script/preprocess/unzip_foreigner_speech.sh
