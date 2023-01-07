@@ -10,7 +10,6 @@ Foreigner Korean speech voice recognition hackathon - CSLEE
 git clone https://github.com/soohyunme/foreigner_speech
 cd foreigner_speech
 pip3 install -e .
-python3 setup.py build develop
 ```
 - We only test this implementation in Ubuntu 20.04.
 - DockerFile is also supported in this repo.
