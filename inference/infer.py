@@ -278,19 +278,19 @@ def main(args, task=None, model_state=None):
     def build_generator(args):
         w2l_decoder = getattr(args, "w2l_decoder", None)
         if w2l_decoder == "viterbi":
-            from examples.speech_recognition.w2l_decoder import W2lViterbiDecoder
+            from w2l_decoder import W2lViterbiDecoder
 
             return W2lViterbiDecoder(args, task.target_dictionary)
         elif w2l_decoder == "kenlm":
-            from examples.speech_recognition.w2l_decoder import W2lKenLMDecoder
+            from w2l_decoder import W2lKenLMDecoder
 
             return W2lKenLMDecoder(args, task.target_dictionary)
         elif w2l_decoder == "fairseqlm":
-            from examples.speech_recognition.w2l_decoder import W2lFairseqLMDecoder
+            from w2l_decoder import W2lFairseqLMDecoder
 
             return W2lFairseqLMDecoder(args, task.target_dictionary)
         elif w2l_decoder == "parlance":
-            from examples.speech_recognition.w2l_decoder import W2lParlanceDecoder
+            from w2l_decoder import W2lParlanceDecoder
 
             return W2lParlanceDecoder(args, task.target_dictionary)
         else:
