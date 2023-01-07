@@ -333,7 +333,6 @@ def main(args, task=None, model_state=None):
     errs_t = 0
     lengths_t = 0
     cer_t = 0
-    lengths_c = 0
 
     with progress_bar.build_progress_bar(args, itr) as t:
 
@@ -407,7 +406,6 @@ def main(args, task=None, model_state=None):
                 errs_t += errs
                 lengths_t += length
                 cer_t += _cer
-                lengths_c += 1
 
             wps_meter.update(num_generated_tokens)
             t.log({"wps": round(wps_meter.avg)})
@@ -431,7 +429,7 @@ def main(args, task=None, model_state=None):
     else:
         if lengths_t > 0:
             wer = errs_t * 100.0 / lengths_t
-            cer = cer_t * 100.0 / lengths_c
+            cer = cer_t * 100.0 / num_sentences
             logger.info(f"WER: {wer:.3f}")
             logger.info(f'CER: {cer:.3f}')
 
