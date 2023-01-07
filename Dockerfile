@@ -61,7 +61,4 @@ RUN cd ctcdecode && pip install .
 # Hydra setting 
 RUN echo "export HYDRA_FULL_ERROR=1" >> ~/.bashrc
 
-# Install SSH related 
-RUN echo 'root:qwer12#$' | chpasswd
-RUN sed -ri 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
-ENTRYPOINT service ssh restart && bash
+WORKDIR /root
