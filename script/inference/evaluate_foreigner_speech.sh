@@ -16,7 +16,7 @@ DECODER=viterbi
 MAX_TOKEN=4000000
 
 python inference/infer.py $MANIFEST_PATH --task audio_finetuning \
-    --path $CHECKPOINT \
+    --path $CHECKPOINT_PATH \
     --gen-subset $SUBSET \
     --results-path $SAVE_DIR \
     --w2l-decoder $DECODER \
