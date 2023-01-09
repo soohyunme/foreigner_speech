@@ -3,8 +3,8 @@
 # before run code, please check config files to modify options required.
 
 MANIFEST_PATH=/path/to/data
-CHECKPOINT_PATH=$(realpath .)/checkpoints/finetune/foreigner/further/checkpoint_best.pt ## it is dummy, please modify it
 SAVE_DIR=/path/to/save
+CHECKPOINT_PATH=$(realpath .)/checkpoints/finetune/foreigner/further/checkpoint_best.pt ## it is dummy, please modify it
 
 # SUBSET indiates evaluation set. our manifest only include valid
 SUBSET=valid
