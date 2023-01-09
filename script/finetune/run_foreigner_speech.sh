@@ -6,7 +6,6 @@
 # before run code, please check config files to modify options required.
 
 MANIFEST_PATH=/path/to/data
-MODEL_PATH=/path/to/checkpoint
 
 # Select config from ['100h', '960h']
 CONFIG_NAME=100h 
@@ -14,6 +13,6 @@ CONFIG_NAME=100h
 python fairseq_cli/hydra_train.py \
   task.data=$MANIFEST_PATH \
   checkpoint.save_dir=$(realpath .)/checkpoints/finetune/foreigner/further \
-  model.w2v_path=$MODEL_PATH \
+  model.w2v_path=$(realpath .)/checkpoints/pretrain/further_pretrain/checkpoint_best.pt \
   --config-dir config/finetuning  \
   --config-name $CONFIG_NAME
