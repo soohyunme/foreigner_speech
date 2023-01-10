@@ -54,13 +54,17 @@ def make_manifest(args, dataset, dir_dict):
 
         for fname in glob.iglob(search_path, recursive=True):
             parts = os.path.dirname(fname).split(os.sep)
-            wav_dir = os.sep.join(dir if i !=len(parts) - 2 else dir_dict['dataset_dir_tag'][dataset]+dir for i, dir in enumerate(parts)).replace('라벨링데이터', '원천데이터')
+            wav_dir = os.sep.join(dir if i !=len(parts) - 2 else dir_dict['dataset_dir_tag'][dataset] + dir for i, dir in enumerate(parts)).replace('라벨링데이터', '원천데이터')
 
             with open(fname, 'r') as f:
                 info_data = json.load(f)
                 file_path = os.path.join(wav_dir, info_data['fileName'])
-                transcription = info_data['transcription']['ReadingLabelText'] if \
-                    info_data['transcription']['ReadingLabelText'] != '' else info_data['transcription']['AnswerLabelText']
+                
+                if (info_data['transcription']['ReadingLabelText']):
+                    transcription = info_data['transcription']['ReadingLabelText']
+                else:
+                    transcription = info_data['transcription']['AnswerLabelText']
+                    
                 new_sentence = sentence_filter(raw_sentence=transcription, mode=args.preprocess_mode)
 
                 if len(new_sentence) > args.token_limit:
