@@ -196,8 +196,6 @@ def main(args):
     test_errors, test_file_info, test_transcriptions, test_texts = load_script(args, data_name, test_json_list)
     save_files(args, data_name, test_errors, test_file_info, test_transcriptions, test_texts)
 
-    return
-
 
 if __name__ == "__main__":
     parser = get_parser()
