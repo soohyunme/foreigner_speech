@@ -36,17 +36,20 @@ def get_parser():
         help='Ex) (70%)/(칠 십 퍼센트) 확률이라니 (뭐 뭔)/(모 몬) 소리야 진짜 (100%)/(백 프로)가 왜 안돼?'
                 'phonetic: 칠 십 퍼센트 확률이라니 모 몬 소리야 진짜 백 프로가 왜 안돼?'
                 'spelling: 70% 확률이라니 뭐 뭔 소리야 진짜 100%가 왜 안돼?')
+    
     return parser
 
 
 def convert_wav_path(path):
     parts = os.path.dirname(path).split(os.sep)
+
     if parts[-3] == '1.Training':
         new_path = path.replace(parts[-1], 'TS_' + parts[-1])
     elif parts[-3] == '2.Validation':
         new_path = path.replace(parts[-1], 'VS_' + parts[-1])
     
     new_path = new_path.replace('라벨링데이터', '원천데이터')
+    
     return new_path
 
 
@@ -111,8 +114,9 @@ def save_files(args, dataset, errors, file_info, transcriptions, texts):
         with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
             for error_item in errors:
                 print(error_item, file=error_f)
-    return
+
     print("save files [{}]".format(dataset))
+
     return 
 
 
@@ -133,6 +137,8 @@ def save_dict(args, transcriptions):
     with open(os.path.join(args.dest, 'dict.ltr.txt'), 'w') as write_f:
         for idx, (grpm, freq) in enumerate(zip(vocab_list, vocab_freq)):
             print("{} {}".format(grpm, freq), file=write_f)
+    
+    return
 
 
 def clean_up(dir_path):
