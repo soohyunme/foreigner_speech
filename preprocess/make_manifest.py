@@ -108,7 +108,7 @@ def save_files(args, dataset, errors, file_info, transcriptions, texts):
             print(ltr_item, file=ltr_out)
 
     if errors:
-        with open(os.path.join(args.dest, dataset + "_error.txt"), "w") as error_f:
+        with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
             for error_item in errors:
                 print(error_item, file=error_f)
     return
@@ -153,7 +153,6 @@ def clean_up(dir_path):
     
     return
         
-
 
 def split_dataset(args, json_list):
     rand = random.Random(args.seed)
