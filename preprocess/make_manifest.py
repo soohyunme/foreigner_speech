@@ -59,7 +59,7 @@ def load_script(args, data_name, json_list):
     transcriptions = list()
     texts = list()
 
-    reg = re.compile(r'.*[a-zA-Z0-9]')
+    reg = re.compile(r'.*[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ]')
     limit_count = 0
     remove_count = 0
 
