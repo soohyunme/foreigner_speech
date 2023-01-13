@@ -34,9 +34,13 @@ LIMIT=200
 PROCESS_MODE=phonetic
 # PROCESS_MODE=spelling
 
+# percentage of data to use as test set (between 0 and 1)
+TEST_RATIO=0.05
+
 # Run unzip code
 python preprocess/make_manifest.py \
     "$ROOT_DIR" \
     --dest "$DESTINATION" \
     --preprocess-mode $PROCESS_MODE \
-    --token-limit $LIMIT
+    --token-limit $LIMIT \
+    --test-percent $TEST_RATIO
