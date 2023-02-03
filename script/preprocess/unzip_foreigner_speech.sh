@@ -10,6 +10,9 @@
 #         |------원천데이터
 #             |----------TS_1. 베트남어.zip
 #             |----------TS_2. 영어.zip
+#         |------원천데이터_230113_add
+#             |----------TS_3. 일본어_add.zip
+#             |----------TS_4. 중국어_add.zip
 #   |-------2.Validation
 #         |------라벨링데이터
 #             |----------1. 베트남어.zip
@@ -17,6 +20,8 @@
 #         |------원천데이터
 #             |----------VS_1. 베트남어.zip
 #             |----------VS_2. 영어.zip
+#         |------원천데이터_230113_add
+#             |----------VS_5. 태국어_add.zip
 
 # Put your absolute 'RootDir' path below
 ROOT_DIR='/code/gitRepo/data/aihub/foreigner_speech' ## it is dummy, please modify it

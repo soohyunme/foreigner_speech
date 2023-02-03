@@ -54,7 +54,6 @@ def convert_wav_path(path):
 
 
 def load_script(args, data_name, json_list):
-    errors = list()
     file_info = list()
     transcriptions = list()
     texts = list()
@@ -81,13 +80,8 @@ def load_script(args, data_name, json_list):
             if reg.match(new_sentence):
                 remove_count+=1
                 continue
-
-            try:
-                frames = soundfile.info(file_path).frames
-            except:
-                errors.append(file_path)
-                continue
-
+            
+            frames = soundfile.info(file_path).frames
             file_info.append("{}\t{}".format(os.path.relpath(file_path, args.root), frames))
             transcriptions.append(new_sentence)
             texts.append(" ".join(list(new_sentence.replace(" ", "|"))) + " |")
@@ -95,10 +89,10 @@ def load_script(args, data_name, json_list):
     print("[{}] Length ignore numbers : {}".format(data_name, limit_count))
     print("[{}] digit and alphabet ignore numbers : {}".format(data_name, remove_count))
 
-    return errors, file_info, transcriptions, texts
+    return file_info, transcriptions, texts
     
 
-def save_files(args, dataset, errors, file_info, transcriptions, texts):
+def save_files(args, dataset, file_info, transcriptions, texts):
     with open(os.path.join(args.dest, dataset + ".tsv"), "w") as tsv_out, open(
         os.path.join(args.dest, dataset + ".ltr"), "w"
     ) as ltr_out, open(
@@ -109,11 +103,6 @@ def save_files(args, dataset, errors, file_info, transcriptions, texts):
             print(tsv_item, file=tsv_out)
             print(wrd_item, file=wrd_out)
             print(ltr_item, file=ltr_out)
-
-    if errors:
-        with open(os.path.join(args.dest, "error.txt"), "a+") as error_f:
-            for error_item in errors:
-                print(error_item, file=error_f)
 
     print("save files [{}]".format(dataset))
 
@@ -143,7 +132,7 @@ def save_dict(args, transcriptions):
 
 def clean_up(dir_path):
     dataset = ['train', 'valid', 'test']
-    ext_list = ['.tsv', '.wrd', '.ltr', '_error.txt']
+    ext_list = ['.tsv', '.wrd', '.ltr']
     dict_path = os.path.join(dir_path, 'dict.ltr.txt')
     file_list = [dict_path]
 
@@ -190,17 +179,17 @@ def main(args):
     valid_json_list, test_json_list = split_dataset(args, tmp_json_list)
 
     data_name = 'train' 
-    train_errors, train_file_info, train_transcriptions, train_texts = load_script(args, data_name, train_json_list)
-    save_files(args, data_name, train_errors, train_file_info, train_transcriptions, train_texts)
+    train_file_info, train_transcriptions, train_texts = load_script(args, data_name, train_json_list)
+    save_files(args, data_name, train_file_info, train_transcriptions, train_texts)
     save_dict(args, train_transcriptions)
     
     data_name = 'valid' 
-    valid_errors, valid_file_info, valid_transcriptions, valid_texts = load_script(args, data_name, valid_json_list)
-    save_files(args, data_name, valid_errors, valid_file_info, valid_transcriptions, valid_texts)
+    valid_file_info, valid_transcriptions, valid_texts = load_script(args, data_name, valid_json_list)
+    save_files(args, data_name, valid_file_info, valid_transcriptions, valid_texts)
 
     data_name = 'test' 
-    test_errors, test_file_info, test_transcriptions, test_texts = load_script(args, data_name, test_json_list)
-    save_files(args, data_name, test_errors, test_file_info, test_transcriptions, test_texts)
+    test_file_info, test_transcriptions, test_texts = load_script(args, data_name, test_json_list)
+    save_files(args, data_name, test_file_info, test_transcriptions, test_texts)
 
 
 if __name__ == "__main__":

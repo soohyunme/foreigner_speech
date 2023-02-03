@@ -30,17 +30,26 @@ def unzip(src_path, dest_path):
                 raise Exception("unzip error '" + str(src_path) + "'")
 
 
-def main(args):
-    root = os.path.dirname(args.src) if args.dest is None else args.dest
+def convert_path(args, path):
+    fdir, fname = os.path.split(path)
+    fname = os.path.splitext(fname)[0]
+    parts = fdir.split(os.sep)[-3:]
 
+    if 'add' in parts[-1]:
+        parts[-1] = parts[-1].split("_")[0]
+        fname = fname.split("_add")[0]
+    
+    fdir = os.sep.join(parts)
+
+    return os.path.join(args.dest, fdir, fname)
+
+
+def main(args):
     search_path = os.path.join(args.src, "**/*." + args.ext)
     assert len(list(glob.iglob(search_path, recursive=True))) != 0, "root 경로에서 압축파일을 찾을 수 없습니다. root_path : [{}]".format(args.src)
 
     for src_path in glob.iglob(search_path, recursive=True):
-        parts = src_path.split(os.sep)
-        dir = os.sep.join(parts[len(args.src.split(os.sep))-1:]).split('.'+args.ext)[0]
-        dest_dir = os.path.join(root, dir)
-
+        dest_dir = convert_path(args, src_path)
         unzip(src_path, dest_dir)
 
 
