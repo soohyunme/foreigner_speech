@@ -1,7 +1,7 @@
 # Wav2vec 2.0
 Foreigner Korean speech voice recognition hackathon - CSLEE
 
-# Requirements and Installation
+## Requirements and Installation
 
 * [PyTorch](http://pytorch.org/) version >= 1.10.0
 * Python version >= 3.8
