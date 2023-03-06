@@ -1,8 +1,8 @@
 import argparse
 import glob
-from zipfile import ZipFile
-import shutil
 import os
+import shutil
+from zipfile import ZipFile
 
 
 def get_parser():

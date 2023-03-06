@@ -15,17 +15,19 @@ import os
 import sys
 
 import editdistance
+import Levenshtein as Lev
 import numpy as np
 import torch
+
 from fairseq import checkpoint_utils, options, progress_bar, tasks, utils
 from fairseq.data.data_utils import post_process
 from fairseq.logging.meters import StopwatchMeter, TimeMeter
-import Levenshtein as Lev
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def add_asr_eval_argument(parser):
     parser.add_argument("--kspmodel", default=None, help="sentence piece model")
@@ -112,11 +114,11 @@ def get_dataset_itr(args, task, models):
 
 
 def get_cer(ref, hyp):
-    ref = ''.join(ref)
-    hyp = ''.join(hyp).replace('<unk>', '')
+    ref = "".join(ref)
+    hyp = "".join(hyp).replace("<unk>", "")
     dist = Lev.distance(hyp, ref)
     length = len(ref)
-    return dist, length, dist/length
+    return dist, length, dist / length
 
 
 def process_predictions(
@@ -159,7 +161,7 @@ def process_predictions(
 
         hyp_words = hyp_words.split()
         tgt_words = tgt_words.split()
-        _, _, hyp_cer   = get_cer(tgt_words, hyp_words)
+        _, _, hyp_cer = get_cer(tgt_words, hyp_words)
         return editdistance.eval(hyp_words, tgt_words), len(tgt_words), hyp_cer
 
 
@@ -253,7 +255,6 @@ def main(args, task=None, model_state=None):
         optimize_models(args, use_cuda, models)
         task.load_dataset(args.gen_subset, task_cfg=saved_cfg.task)
 
-
     # Set dictionary
     tgt_dict = task.target_dictionary
 
@@ -335,7 +336,6 @@ def main(args, task=None, model_state=None):
     cer_t = 0
 
     with progress_bar.build_progress_bar(args, itr) as t:
-
         wps_meter = TimeMeter()
         for sample in t:
             sample = utils.move_to_cuda(sample) if use_cuda else sample
@@ -431,7 +431,7 @@ def main(args, task=None, model_state=None):
             wer = errs_t * 100.0 / lengths_t
             cer = cer_t * 100.0 / num_sentences
             logger.info(f"WER: {wer:.3f}")
-            logger.info(f'CER: {cer:.3f}')
+            logger.info(f"CER: {cer:.3f}")
 
         logger.info(
             "| Processed {} sentences ({} tokens) in {:.1f}s ({:.2f}"
