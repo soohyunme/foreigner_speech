@@ -7,9 +7,7 @@ import os
 
 def get_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "src", metavar="DIR", help="src"
-    )
+    parser.add_argument("src", metavar="DIR", help="src")
     parser.add_argument(
         "--dest", default=None, type=str, metavar="DIR", help="dest directory"
     )
@@ -20,11 +18,13 @@ def get_parser():
 
 
 def unzip(src_path, dest_path):
-    with ZipFile(src_path, 'r') as zf:
+    with ZipFile(src_path, "r") as zf:
         zipInfo = zf.infolist()
         for member in zipInfo:
             try:
-                member.filename = member.filename.encode('cp437').decode('euc-kr', 'ignore')
+                member.filename = member.filename.encode("cp437").decode(
+                    "euc-kr", "ignore"
+                )
                 zf.extract(member, dest_path)
             except:
                 raise Exception("unzip error '" + str(src_path) + "'")
@@ -35,10 +35,10 @@ def convert_path(args, path):
     fname = os.path.splitext(fname)[0]
     parts = fdir.split(os.sep)[-3:]
 
-    if 'add' in parts[-1]:
+    if "add" in parts[-1]:
         parts[-1] = parts[-1].split("_")[0]
         fname = fname.split("_add")[0]
-    
+
     fdir = os.sep.join(parts)
 
     return os.path.join(args.dest, fdir, fname)
@@ -46,7 +46,9 @@ def convert_path(args, path):
 
 def main(args):
     search_path = os.path.join(args.src, "**/*." + args.ext)
-    assert len(list(glob.iglob(search_path, recursive=True))) != 0, "root 경로에서 압축파일을 찾을 수 없습니다. root_path : [{}]".format(args.src)
+    assert (
+        len(list(glob.iglob(search_path, recursive=True))) != 0
+    ), f"root 경로에서 압축파일을 찾을 수 없습니다. root_path : [{args.src}]"
 
     for src_path in glob.iglob(search_path, recursive=True):
         dest_dir = convert_path(args, src_path)
