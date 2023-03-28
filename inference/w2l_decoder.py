@@ -12,32 +12,32 @@ Flashlight decoders.
 import gc
 import itertools as it
 import os.path as osp
-from typing import List
 import warnings
 from collections import deque, namedtuple
+from typing import List
 
 import numpy as np
 import torch
-from fairseq import tasks
-from fairseq.utils import apply_to_sample
-from omegaconf import open_dict
-from fairseq.dataclass.utils import convert_namespace_to_omegaconf
 from ctcdecode import CTCBeamDecoder
+from omegaconf import open_dict
 
+from fairseq import tasks
+from fairseq.dataclass.utils import convert_namespace_to_omegaconf
+from fairseq.utils import apply_to_sample
 
 try:
-    from flashlight.lib.text.dictionary import create_word_dict, load_words
     from flashlight.lib.sequence.criterion import CpuViterbiPath, get_data_ptr_as_bytes
     from flashlight.lib.text.decoder import (
-        CriterionType,
-        LexiconDecoderOptions,
-        KenLM,
         LM,
+        CriterionType,
+        KenLM,
+        LexiconDecoder,
+        LexiconDecoderOptions,
         LMState,
         SmearingMode,
         Trie,
-        LexiconDecoder,
     )
+    from flashlight.lib.text.dictionary import create_word_dict, load_words
 except:
     warnings.warn(
         "flashlight python bindings are required to use this functionality. Please install from https://github.com/facebookresearch/flashlight/tree/master/bindings/python"
@@ -82,7 +82,7 @@ class W2lDecoder(object):
         model = models[0]
         encoder_out = model(**encoder_input)
         if hasattr(model, "get_logits"):
-            emissions = model.get_logits(encoder_out) # no need to normalize emissions
+            emissions = model.get_logits(encoder_out)  # no need to normalize emissions
         else:
             emissions = model.get_normalized_probs(encoder_out, log_probs=True)
         return emissions.transpose(0, 1).float().cpu().contiguous()
@@ -176,8 +176,13 @@ class W2lKenLMDecoder(W2lDecoder):
                 self.unit_lm,
             )
         else:
-            assert args.unit_lm, "lexicon free decoding can only be done with a unit language model"
-            from flashlight.lib.text.decoder import LexiconFreeDecoder, LexiconFreeDecoderOptions
+            assert (
+                args.unit_lm
+            ), "lexicon free decoding can only be done with a unit language model"
+            from flashlight.lib.text.decoder import (
+                LexiconFreeDecoder,
+                LexiconFreeDecoderOptions,
+            )
 
             d = {w: [[w]] for w in tgt_dict.symbols}
             self.word_dict = create_word_dict(d)
@@ -212,7 +217,7 @@ class W2lKenLMDecoder(W2lDecoder):
         for i, token_idx in enumerate(token_idxs):
             if token_idx == self.blank:
                 continue
-            if i == 0 or token_idx != token_idxs[i-1]:
+            if i == 0 or token_idx != token_idxs[i - 1]:
                 timesteps.append(i)
         return timesteps
 
@@ -440,8 +445,13 @@ class W2lFairseqLMDecoder(W2lDecoder):
                 self.unit_lm,
             )
         else:
-            assert args.unit_lm, "lexicon free decoding can only be done with a unit language model"
-            from flashlight.lib.text.decoder import LexiconFreeDecoder, LexiconFreeDecoderOptions
+            assert (
+                args.unit_lm
+            ), "lexicon free decoding can only be done with a unit language model"
+            from flashlight.lib.text.decoder import (
+                LexiconFreeDecoder,
+                LexiconFreeDecoderOptions,
+            )
 
             d = {w: [[w]] for w in tgt_dict.symbols}
             self.word_dict = create_word_dict(d)
@@ -488,20 +498,20 @@ class W2lFairseqLMDecoder(W2lDecoder):
 
 class W2lParlanceDecoder(W2lDecoder):
     def __init__(self, args, tgt_dict):
-        super().__init__(args, tgt_dict) ## test
+        super().__init__(args, tgt_dict)  ## test
 
         self.tgt_dict = [k for k in tgt_dict.indices.keys()]
-        self.decoder = CTCBeamDecoder (
+        self.decoder = CTCBeamDecoder(
             self.tgt_dict,
-            model_path = getattr(args, "lm_model", None),
-            alpha = float(getattr(args, "alpha", 0.5 )),
-            beta = float(getattr(args, "beta", 0 )),
-            cutoff_top_n = getattr(args, "cutoff_top_n", 40 ),
-            cutoff_prob = getattr(args, "cutoff_prob", 1.0 ),
-            beam_width = getattr(args, "beam_width", 100 ),
-            num_processes = getattr(args, "num_processes", 4 ),
-            blank_id = getattr(args, "blank_id", 0 ),
-            log_probs_input=False
+            model_path=getattr(args, "lm_model", None),
+            alpha=float(getattr(args, "alpha", 0.5)),
+            beta=float(getattr(args, "beta", 0)),
+            cutoff_top_n=getattr(args, "cutoff_top_n", 40),
+            cutoff_prob=getattr(args, "cutoff_prob", 1.0),
+            beam_width=getattr(args, "beam_width", 100),
+            num_processes=getattr(args, "num_processes", 4),
+            blank_id=getattr(args, "blank_id", 0),
+            log_probs_input=False,
         )
 
     def generate(self, models, sample, **unused):
@@ -512,28 +522,31 @@ class W2lParlanceDecoder(W2lDecoder):
         emissions = self.get_emissions(models, encoder_input)
         emissions_softmax = torch.nn.functional.softmax(emissions, dim=2)
         return self.decode(emissions_softmax)
-    
+
     def get_emissions(self, models, encoder_input):
         model = models[0]
         encoder_out = model(**encoder_input)
-        emissions = model.get_logits(encoder_out).transpose(0, 1).float().cpu().contiguous()
+        emissions = (
+            model.get_logits(encoder_out).transpose(0, 1).float().cpu().contiguous()
+        )
 
         return emissions
 
     def convert_to_string(self, tokens, vocab, seq_len):
         return "".join([vocab[x] for x in tokens[0:seq_len]])
-    
-    def decode(self, emissions):
 
+    def decode(self, emissions):
         B, T, N = emissions.size()
         hypos = []
 
         beam_results, beam_scores, timesteps, out_lens = self.decoder.decode(emissions)
 
         return [
-            [{
-                "tokens" : self.get_tokens(beam_results[idx][0][:out_lens[idx][0]]),
-                "score" : beam_scores[idx]
-            }]
+            [
+                {
+                    "tokens": self.get_tokens(beam_results[idx][0][: out_lens[idx][0]]),
+                    "score": beam_scores[idx],
+                }
+            ]
             for idx in range(len(beam_results))
         ]

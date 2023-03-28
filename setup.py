@@ -65,6 +65,7 @@ extensions = [
     )
 ]
 
+
 def do_setup(package_data):
     setup(
         name="foreigner_speech",
