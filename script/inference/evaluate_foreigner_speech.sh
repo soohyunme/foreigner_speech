@@ -6,8 +6,8 @@ MANIFEST_PATH=/path/to/data
 SAVE_DIR=/path/to/save
 CHECKPOINT_PATH=$(realpath .)/checkpoints/finetune/foreigner/further/checkpoint_best.pt ## it is dummy, please modify it
 
-# SUBSET indiates evaluation set. our manifest only include valid
-SUBSET=valid
+# SUBSET indiates evaluation set. our manifest include valid, test
+SUBSET=test
 
 # select decoder type [viterbi, kenlm, parlance, fairseqlm]
 DECODER=viterbi
