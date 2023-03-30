@@ -21,7 +21,7 @@ RUN pip install soundfile \
     torch \
     editdistance \
     tensorboardX \
-    Levenshtein
+    nlptutti
 
 # Install language setup in Korean 
 RUN apt-get update && apt-get install locales && \
