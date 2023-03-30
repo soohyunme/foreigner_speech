@@ -15,7 +15,7 @@ import os
 import sys
 
 import editdistance
-import Levenshtein as Lev
+import nlptutti as metrics
 import numpy as np
 import torch
 
@@ -115,10 +115,10 @@ def get_dataset_itr(args, task, models):
 
 def get_cer(ref, hyp):
     ref = "".join(ref)
-    hyp = "".join(hyp).replace("<unk>", "")
-    dist = Lev.distance(hyp, ref)
-    length = len(ref)
-    return dist, length, dist / length
+    hyp = "".join(hyp).replace("<unk>", "").replace("<pad>", "")
+    result = metrics.get_cer(ref, hyp)
+    cer = result['cer']
+    return cer
 
 
 def process_predictions(
@@ -161,7 +161,7 @@ def process_predictions(
 
         hyp_words = hyp_words.split()
         tgt_words = tgt_words.split()
-        _, _, hyp_cer = get_cer(tgt_words, hyp_words)
+        hyp_cer = get_cer(tgt_words, hyp_words)
         return editdistance.eval(hyp_words, tgt_words), len(tgt_words), hyp_cer
 
 
