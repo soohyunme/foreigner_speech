@@ -38,6 +38,8 @@ bash script/inference/evaluate_foreigner_speech.sh
 
 ## Pretrained model
 - E-Wav2vec 2.0 : Wav2vec 2.0 pretrained on Englsih dataset released by Fairseq(-py)
+- Foreigner-wav2vec 2.0 : The model further pretrained on Foreigner-speech by using Englsih model
+  - Fairseq Version : If you want to fine-tune your model with fairseq framework, you can download with this [LINK](https://drive.google.com/file/d/18qwxstEiG6YZdK536g_9A6Y4mss6ae0Q/view?usp=sharing)
 
 ## Dataset
 - [Foreigner-speech](https://www.aihub.or.kr/aihubdata/data/view.do?&dataSetSn=505) : Korean speech data of foreigner speakers
